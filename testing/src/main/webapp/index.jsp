@@ -1,6 +1,6 @@
 <html>
 <body>
 <h2>Hello World!</h2>
-<a href="/foo/test.html">Click Me</a>
+<a href="<%=request.getContextPath()%>/sample">Click Me</a>
 </body>
 </html>

@@ -6,7 +6,7 @@
   <display-name>Archetype Created Web Application</display-name>
   <servlet>
     <servlet-name>simple</servlet-name>
-    <servlet-class>org.test.SimpleServle\</servlet-class>
+    <servlet-class>org.test.SimpleServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>simple</servlet-name>
