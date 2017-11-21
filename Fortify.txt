@@ -1,0 +1,11 @@
+private void validateReturnPage(String pageUrl, HttpServletRequest req) throws MalformedURLException
+{
+if (pageUrl.indexOf(':') != -1)
+{ // ':' only allowed in a URL as part of a scheme prefix 
+throw new IllegalArgumentException("The redirect URL doesn't support absolute URls"); }
+// Evaluate it relative to the request URL and strip out .. and .
+pageUrl = new URL(new URL(req.getRequestURL().toString()), pageUrl).getPath();
+if (!pageUrl.startsWith(req.getContextPath()))
+{ throw new IllegalArgumentException("The redirect URL must be in the same context."); 
+}
+}
