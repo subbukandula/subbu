@@ -1,0 +1,56 @@
+1) Header MaNIPULATION : COOKIES
+2) Cookie Security: overly broad path
+
+
+ a web application under telekom.net/meineAnwendung/index.jsp sets a cookie with the path "; path = /". The cookie is then sent with all requests to the domain telekom.net, possibly at other, less trusted applications that have been placed in the root or in any other directories.
+ 
+If the path, however, to "; path = / myApp /", the cookie is sent only with requests to domain.org/myApp/ (and also by all of the underlying sub-directories, but not overlying directories). The final slash character must not be omitted because the cookie is otherwise sent to other directories with matching names, z. B. to telekom.net/meineAnwendung-exploited.
+ 
+If no path is specified, the browser uses as default the path of the current HTTP request, based on which the cookie was set.
+Motivation: A restrictive use of the "path" attribute prevents the session cookie is sent to other Web applications.
+
+There is issue with this that i am facing 
+Say cookie path is set to "/Support"
+if user requests as "www.domain.com/support" the cookie is not available. Only if request is "www.domain.com/Support" the cookie can be read. 
+Couldn't find soln in whole net. It is highly appreciable if any soln to this problem
+
+
+ESAPI.encoder().encodeForHTML(raw)
+
+
+// ensure no CRLF injection into logs for forging records
+String clean = message.replace( '\n', '_' ).replace( '\r', '_' );
+if ( ESAPI.securityConfiguration().getLogEncodingRequired() ) {
+    clean = ESAPI.encoder().encodeForHTML(message);
+    if (!message.equals(clean)) {
+        clean += " (Encoded)";
+    }
+}
+
+
+<dependency>
+    <groupId>org.owasp.esapi</groupId>
+    <artifactId>esapi</artifactId>
+    <version>2.1.0.1</version>
+</dependency>
+
+public String encode(String message) {
+    message = message.replace( '\n' ,  '_' ).replace( '\r' , '_' )
+      .replace( '\t' , '_' );
+    message = ESAPI.encoder().encodeForHTML( message );
+    return message;
+}
+
+// ensure no CRLF injection into logs for forging records
+String clean = message.replace( '\n', '_' ).replace( '\r', '_' );
+if ( ESAPI.securityConfiguration().getLogEncodingRequired() ) {
+    clean = ESAPI.encoder().encodeForHTML(message);
+    if (!message.equals(clean)) {
+        clean += " (Encoded)";
+    }
+}
+
+@FortifyValidate("return")
+private String sanitizeString(String taintedString) {
+    return doSomethingWithTheString(taintedString);
+}
