@@ -1,0 +1,106 @@
+import java.io.IOException;  
+ import java.io.InputStream;  
+ import java.io.InvalidClassException;  
+ import java.io.ObjectInputStream;  
+ import java.io.ObjectStreamClass;  
+ public class SafeInputStream extends ObjectInputStream {  
+    private String classNameToDeserialize;  
+    public String getClassNameToDeserialize() {  
+       return classNameToDeserialize;  
+    }  
+    public void setClassNameToDeserialize(String classNameToDeserialize) {  
+       this.classNameToDeserialize = classNameToDeserialize;  
+    }  
+    public SafeInputStream(InputStream inputStream)  
+          throws IOException {  
+       super(inputStream);  
+    }  
+    /**  
+     * Only deserialize instances of our expected Budget class  
+     */  
+    @Override  
+    protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException,  
+          ClassNotFoundException {   
+       if (!desc.getName().equals(classNameToDeserialize)) {  
+          throw new InvalidClassException(  
+                "Unauthorized deserialization attempt", desc.getName());  
+       }  
+       return super.resolveClass(desc);  
+    }  
+ }  
+
+
+
+ package test.LookAheadDeserializer;  
+ import java.io.ByteArrayInputStream;  
+ import java.io.ByteArrayOutputStream;  
+ import java.io.IOException;  
+ import java.io.ObjectInputStream;  
+ import java.io.ObjectOutputStream;  
+ /**  
+  * A simple Java program to demonstrate how to perform input validation on  
+  * serialized binary buffers. Specifically, we only want to allow instances of  
+  * the Budget class to be deserialized.  
+  *   
+  *   
+  *   
+  */  
+ public class DeserializationTest {  
+    private static byte[] serialize(Object obj) throws IOException {  
+       ByteArrayOutputStream baos = new ByteArrayOutputStream();  
+       ObjectOutputStream oos = new ObjectOutputStream(baos);  
+       oos.writeObject(obj);  
+       byte[] buffer = baos.toByteArray();  
+       oos.close();  
+       baos.close();  
+       return buffer;  
+    }  
+    private static Object deserializeOldWay( byte[] buffer ) throws IOException,  
+    ClassNotFoundException {  
+       ByteArrayInputStream bais = new ByteArrayInputStream(buffer);  
+       // We use LookAheadObjectInputStream instead of InputStream  
+       ObjectInputStream ois = new ObjectInputStream(bais);  
+       Object obj = ois.readObject();  
+       ois.close();  
+       bais.close();  
+       return obj;  
+    }  
+    private static Object deserialize(byte[] buffer, String classNameToDeserialize) throws IOException,  
+          ClassNotFoundException {  
+       ByteArrayInputStream bais = new ByteArrayInputStream(buffer);  
+       // We use LookAheadObjectInputStream instead of InputStream  
+       SafeInputStream ois = new SafeInputStream(bais);  
+       ois.setClassNameToDeserialize( classNameToDeserialize);  
+       Object obj = ois.readObject();  
+       ois.close();  
+       bais.close();  
+       return obj;  
+    }  
+    public static void main(String[] args) {  
+       try {  
+          // Serialize a Employee instance  
+          byte[] serializedEmployee = serialize(new Employee("John", "Rambo", 1234));  
+          // Serialize a Vehicle instance  
+          byte[] serializedVehicle = serialize(new Vehicle("Toyota","Corolla",2015));  
+          // Deserialize the Employee instance (legitimate use case)  
+          Employee employee0 = (Employee) deserialize(serializedEmployee, Employee.class.getName());           
+          System.out.println( "Employee Object deserialized. The object is:\n" + employee0 );  
+          // Deserialize the Employee instance from Vehicle object(error case)  
+          System.out.println( "Deserializing the oldway.." );  
+          Object object1 = deserializeOldWay( serializedVehicle );  
+          System.out.println( "Oldway Deseriazation does not throw errors.." );  
+          try{  
+             Employee employee1 = (Employee)object1;  
+          }  
+          catch( Exception e )  
+          {  
+             System.out.println( "Failed to cast as Employee object after deserializing the old way\nThe error message is:\n" + e.getMessage());  
+          }  
+          System.out.println( "Deserializing the safe way.." );  
+          Object object2 = deserialize(serializedVehicle, Employee.class.getName());           
+          Employee employee2 = (Employee)object2;  
+       } catch (Exception ex) {  
+          ex.printStackTrace(System.err);  
+       }  
+    }  
+ }  
