@@ -9,3 +9,51 @@ if (!pageUrl.startsWith(req.getContextPath()))
 { throw new IllegalArgumentException("The redirect URL must be in the same context."); 
 }
 }
+
+
+
+
+Log forging
+
+If you really need less code then I'd suggest you to do a helper
+public static String[] htmlEscape(final String... args) {
+     return Arrays.stream(args)
+                  .map(HtmlUtil::htmlEscape)
+                  .toArray(String[]::new);
+}
+And use it this way
+if (logger.isInfoEnabled()) {
+    logger.info("call  idn:{}, agentNo={}", htmlEscape(idn, agentNo));
+}
+Note a call to isInfoEnabled. It prevents you from doing unnecessary arguments escaping if INFO loglevel is disabled. You can reduce this cpu overhead by a bit increased memory usage by using this tricky way to make it htmlEscape lazy evaluated
+public static Object[] lazyHtmlEscape(final String... args) {
+     return Arrays.stream(args)
+                  .map(arg -> new Object {
+                      @Override
+                      public String toString() {
+                          // here argument will be escaped only if
+                          // toString method will be called
+                          // (that happens if loglevel is enabled)
+                          return HtmlUtil.htmlEscape(e);
+                      }
+                  })
+                  .toArray();
+}
+logger.info("call  idn:{}, agentNo={}", lazyHtmlEscape(idn, agentNo));
+
+
+@FortifyValidate("return")
+private String sanitizeString(String taintedString) {
+    return doSomethingWithTheString(taintedString);
+}
+
+
+private cleanLogString(String logString) {
+    String clean = logString.replaceAll("[^A-Za-z0-9]", "");
+
+    if(!logString.equals(clean)) {
+        clean += " (CLEANED)";
+    }
+
+    return clean;
+}
