@@ -1,0 +1,28 @@
+01
+import org.apache.logging.log4j.LogManager;
+02
+import org.apache.logging.log4j.Logger;
+03
+      
+04
+public class HelloWorld {
+05
+    private static final Logger logger = LogManager.getLogger("HelloWorld");
+06
+ 
+07
+    public static void main(String[] args) {
+08
+        String name = "Greg";
+09
+        logger.trace("Hello, World!");
+10
+        logger.debug("Debug example!");
+11
+        logger.info("Info example!");
+12
+        logger.warn("Example of a warning!");
+13
+        logger.error("My name is {}", name);
+14
+    }
