@@ -1,4 +1,6 @@
 1) Header MaNIPULATION : COOKIES
+       CR (carriage return, also given by %0d or \r) and 
+       LF (line feed, also given by %0a or \n)characters into the header
 2) Cookie Security: overly broad path
 
 
