@@ -1,3 +1,32 @@
+
+encodeURI escapes all characters except:
+Not Escaped:
+
+    A-Z a-z 0-9 ; , / ? : @ & = + $ - _ . ! ~ * ' ( ) #
+
+
+
+encodeURI()
+Use encodeURI when you want a working URL. Make this call:
+encodeURI("http://www.example.org/a file with spaces.html") 
+to get:
+http://www.example.org/a%20file%20with%20spaces.html
+
+
+<a href="javascript:myFunction('<%=untrustedData%>', 'test');">Click Me</a>
+ ...
+<script>
+Function myFunction (url,name) {
+    window.location = url;
+}
+</script>
+
+In the above example, untrusted data started in the rendering URL context (href attribute of an <a> tag) then changed to a JavaScript execution context (javascript: protocol handler) which passed the untrusted data to an execution URL subcontext (window.location of myFunction). Because the data was introduced in JavaScript code and passed to a URL subcontext the appropriate server-side encoding would be the following:
+ 
+<a href="javascript:myFunction('<%=Encoder.encodeForJS( Encoder.encodeForURL(untrustedData)) %>', 'test');">Click Me</a>
+
+
+
 1) Header MaNIPULATION : COOKIES
        CR (carriage return, also given by %0d or \r) and 
        LF (line feed, also given by %0a or \n)characters into the header
