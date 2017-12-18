@@ -1,3 +1,11 @@
+fileName = args[0];
+final String regularExpression = "([\\w\\:\\\\w ./-]+\\w+(\\.)?\\w+)";
+Pattern pattern = Pattern.compile(regularExpression);
+boolean isMatched = pattern.matcher(fileName).matches();
+
+
+
+
 private void validateReturnPage(String pageUrl, HttpServletRequest req) throws MalformedURLException
 {
 if (pageUrl.indexOf(':') != -1)
