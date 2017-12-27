@@ -1,3 +1,29 @@
+package com.subbu;
+
+import org.apache.commons.lang3.StringUtils;
+
+public class StringPadTesting {
+
+	public static void main(String[] args) {
+
+		String data = "1234567890123456789012345678";
+		System.out.println(data);
+		System.out.println(data.length());
+		String data1 = "123456789012345";
+		String datapad = null;
+		if(null != data1 && data1.length() < 28) {
+			datapad = StringUtils.leftPad(data1, 28, '0');
+		}
+		System.out.println(datapad);
+		System.out.println(datapad.length());
+
+	}
+
+}
+
+
+
+
 If your application only makes use of HTTP or HTTPS to make requests, only allow those URL schemas. Disabling unused URL schemas will prevent a web application from making requests using potentially dangerous URL schemas such as file:///, dict://, ftp:// and gopher://.
 
 
