@@ -1,4 +1,8 @@
 
+compile "org.eclipse.jdt.core.compiler:ecj:4.4"
+...and this works on JDK8 (1.8.0.65).
+
+
     <dependency>
         <groupId>org.eclipse.jdt.core.compiler</groupId>
         <artifactId>ecj</artifactId>
