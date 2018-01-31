@@ -1,0 +1,97 @@
+Finally, we need to publish the WSDL. As stated in Section 3.4, “Service contract”, we don't need to write a WSDL ourselves; Spring-WS can generate one for us based on some conventions. Here is how we define the generation:
+
+<sws:dynamic-wsdl id="holiday"                                                                                         (1)
+    portTypeName="HumanResource"                                                                                       (3)
+    locationUri="/holidayService/"                                                                                     (4)
+    targetNamespace="http://mycompany.com/hr/definitions">                                                             (5)
+  <sws:xsd location="/WEB-INF/hr.xsd"/>                                                                                (2)
+</sws:dynamic-wsdl>
+1
+
+The id determines the URL where the WSDL can be retrieved. In this case, the id is holiday, which means that the WSDL can be retrieved as holiday.wsdl in the servlet context. The full URL will typically be http://localhost:8080/holidayService/holiday.wsdl.
+
+3
+
+Next, we set the WSDL port type to be HumanResource.
+
+4
+
+We set the location where the service can be reached: /holidayService/. We use a relative URI and we instruct the framework to transform it dynamically to an absolute URI. Hence, if the service is deployed to different contexts we don't have to change the URI manually. For more information, please refer to the section called “Automatic WSDL exposure”
+
+For the location transformation to work, we need to add an init parameter to spring-ws servlet in web.xml:
+
+<init-param>
+  <param-name>transformWsdlLocations</param-name>
+  <param-value>true</param-value>
+</init-param>
+5
+
+We define the target namespace for the WSDL definition itself. Setting this attribute is not required. If not set, the WSDL will have the same namespace as the XSD schema.
+
+2
+
+The xsd element refers to the human resource schema we defined in Section 3.3, “Data Contract”. We simply placed the schema in the WEB-INF directory of the application.
+
+
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+...
+ 
+URL wsdl = getClass().getResource("wsdl/greeting.wsdl");
+SOAPService service = new SOAPService(wsdl, serviceName);
+Greeter greeter = service.getPort(portName, Greeter.class);
+ 
+// Okay, are you sick of configuration files ?
+// This will show you how to configure the http conduit dynamically
+Client client = ClientProxy.getClient(greeter);
+HTTPConduit http = (HTTPConduit) client.getConduit();
+ 
+HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+ 
+httpClientPolicy.setConnectionTimeout(36000);
+httpClientPolicy.setAllowChunking(false);
+httpClientPolicy.setReceiveTimeout(32000);
+ 
+http.setClient(httpClientPolicy);
+ 
+...
+greeter.sayHi("Hello");
+
+
+Just for the record, this is currently not working with Dispatch-based clients (e.g. roll-your-own-XML style).
+
+One workaround, if you have control over the WSDL at the other end, is to add:
+
+<http-conf:client ReceiveTimeout="0"/>
+
+as a child of the wsdl:port element. You'll also need to add:
+
+xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
+
+to the wsdl:definitions. http-conf is a special directive understood by CXF, which other stacks should ignore.
+
+There's some other workarounds if you don't control the WSDL, see here.
+
+
+Specifies the amount of time, in milliseconds, that the client will attempt to establish a connection before it times out. The default is 30000 (30 seconds).
+0 specifies that the client will continue to attempt to open a connection indefinitely. 
+
+ReceiveTimeout:
+Specifies the amount of time, in milliseconds, that the client will wait for a response before it times out. The default is 60000.
+0 specifies that the client will wait indefinitely.
+
+These timeouts are specified in schema. please refer schema/configuration/http-conf.xsd in cxf-rt-transports-http jar file
+
+JobPortType port = testCase.getJobServicePort();
+
+org.apache.cxf.endpoint.Client client = ClientProxy.getClient(port);
+
+HTTPConduit httpConduit = (HTTPConduit)client.getConduit();
+
+HTTPClientPolicy policy = httpConduit.getClient();
+
+// set time to wait for response in milliseconds. zero means unlimited
+
+policy.setReceiveTimeout(0);
