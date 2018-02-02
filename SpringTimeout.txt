@@ -8,6 +8,14 @@ Finally, we need to publish the WSDL. As stated in Section 3.4, “Service contr
 </sws:dynamic-wsdl>
 1
 
+JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+factory.setAddress(host);
+factory.setServiceClass(MyService.class);
+factory.getInInterceptors().add(new LoggingInInterceptor());
+factory.getOutInterceptors().add(new LoggingOutInterceptor());
+I got these SOAP 
+
+
 The id determines the URL where the WSDL can be retrieved. In this case, the id is holiday, which means that the WSDL can be retrieved as holiday.wsdl in the servlet context. The full URL will typically be http://localhost:8080/holidayService/holiday.wsdl.
 
 3
