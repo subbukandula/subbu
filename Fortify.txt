@@ -3,6 +3,7 @@ final String regularExpression = "([\\w\\:\\\\w ./-]+\\w+(\\.)?\\w+)";
 Pattern pattern = Pattern.compile(regularExpression);
 boolean isMatched = pattern.matcher(fileName).matches();
 
+response.setContentType("text/xml;charset=UTF-8")
 
 <!-- Interceptors extend e.g. 
        org.apache.cxf.phase.AbstractPhaseInterceptor -->
