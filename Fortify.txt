@@ -1,3 +1,30 @@
+   <subsystem xmlns="urn:jboss:domain:undertow:1.2">                                                                                                                                                      
+            <buffer-cache name="default"/>                                                                                                                                                                     
+            <server name="default-server">                                                                                                                                                                     
+                <http-listener name="default" socket-binding="http"/>                                                                                                                                          
+                <host name="default-host" alias="localhost">                                                                                                                                                   
+                    <location name="/" handler="root-html" />                                                                                                                                                  
+                    <location name="/images" handler="images"/>                                                                                                                                                
+                    <filter-ref name="404-handler" predicate="true"/>                                                                                                                                          
+                    <filter-ref name="fail-content-type" predicate="equals[%{RESPONSE_CODE}, 404]"/>                                                                                                           
+                </host>                                                                                                                                                                                        
+            </server>                                                                                                                                                                                          
+            <servlet-container name="default">                                                                                                                                                                 
+                <jsp-config/>                                                                                                                                                                                  
+                <websockets/>                                                                                                                                                                                  
+            </servlet-container>                                                                                                                                                                               
+            <handlers>                                                                                                                                                                                         
+                <file name="images" path="/var/www/images"/>                                                                                                                                                   
+                <file name="root-html" path="/var/www/html"/>                                                                                                                                                  
+            </handlers>                                                                                                                                                                                        
+            <filters>                                                                                                                                                                                          
+                <response-header name="fail-content-type" header-name="Content-Type" header-value="text/html"/>                                                                                              
+                <error-page name="404-handler" code="404" path="/var/www/error/404.html"/>                                                                                                                     
+            </filters>                                                                                                                                                                                         
+        </subsystem> 
+
+
+
 fileName = args[0];
 final String regularExpression = "([\\w\\:\\\\w ./-]+\\w+(\\.)?\\w+)";
 Pattern pattern = Pattern.compile(regularExpression);
