@@ -4,6 +4,28 @@ Pattern pattern = Pattern.compile(regularExpression);
 boolean isMatched = pattern.matcher(fileName).matches();
 
 
+<!-- Interceptors extend e.g. 
+       org.apache.cxf.phase.AbstractPhaseInterceptor -->
+  <bean id="anotherInterceptor" class="..." />
+ 
+  <!-- Handlers implement e.g. javax.xml.ws.handler.soap.SOAPHandler -->
+  <bean id="jaxwsHandler" class="..." />
+ 
+  <!-- The SOAP client bean -->
+  <jaxws:client id="helloClient"
+                serviceClass="demo.spring.HelloWorld"
+                address="http://localhost:9002/HelloWorld">
+    <jaxws:inInterceptors>
+      <bean class="org.apache.cxf.interceptor.LoggingInInterceptor"/>
+      <ref bean="anotherInterceptor"/>
+    </jaxws:inInterceptor>
+    <jaxws:handlers>
+      <ref bean="jaxwsHandler" />
+    </jaxws:handlers>
+    <jaxws:properties>
+      <entry key="mtom-enabled" value="true"/>
+    </jaxws:properties>
+  </jaxws:client>
 
 
 private void validateReturnPage(String pageUrl, HttpServletRequest req) throws MalformedURLException
