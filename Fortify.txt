@@ -21,7 +21,66 @@
                 <response-header name="fail-content-type" header-name="Content-Type" header-value="text/html"/>                                                                                              
                 <error-page name="404-handler" code="404" path="/var/www/error/404.html"/>                                                                                                                     
             </filters>                                                                                                                                                                                         
-        </subsystem> 
+        </subsystem> lone.xmlXHTML
+
+<subsystem xmlns="urn:jboss:domain:undertow:3.0">
+	<buffer-cache name="default"/>
+	<server name="default-server">
+	<ajp-listener name="ajp" socket-binding="ajp" max-post-size="1048576000"/>
+	<http-listener name="default" max-post-size="2048576000" socket-binding="http"/>
+		<host name="default-host" alias="localhost">
+			<filter-ref name="server-header"/>
+			<filter-ref name="x-powered-by-header"/>
+		</host>
+	</server>
+	<servlet-container name="default">
+		<jsp-config/>
+		<websockets/>
+	</servlet-container>
+	<filters>
+		<response-header name="server-header" header-name="Server" header-value="WildFly/10"/>
+		<response-header name="x-powered-by-header" header-name="X-Powered-By" header-value="Undertow/1"/>
+	</filters>
+</subsystem>
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+<subsystem xmlns="urn:jboss:domain:undertow:3.0">
+	<buffer-cache name="default"/>
+	<server name="default-server">
+	<ajp-listener name="ajp" socket-binding="ajp" max-post-size="1048576000"/>
+	<http-listener name="default" max-post-size="2048576000" socket-binding="http"/>
+		<host name="default-host" alias="localhost">
+			<filter-ref name="server-header"/>
+			<filter-ref name="x-powered-by-header"/>
+		</host>
+	</server>
+	<servlet-container name="default">
+		<jsp-config/>
+		<websockets/>
+	</servlet-container>
+	<filters>
+		<response-header name="server-header" header-name="Server" header-value="WildFly/10"/>
+		<response-header name="x-powered-by-header" header-name="X-Powered-By" header-value="Undertow/1"/>
+	</filters>
+</subsystem>
+
 
 
 
