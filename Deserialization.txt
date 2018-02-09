@@ -1,5 +1,14 @@
 
 
+I have similar problem and the solution for me was to set write-timeout parameter in standalone.xml for ajp listener:
+
+<subsystem xmlns="urn:jboss:domain:undertow:1.2">
+        <buffer-cache name="default"/>
+        <server name="default-server">
+            <ajp-listener name="ajp-connector" socket-binding="ajp" write-timeout="120000" no-request-timeout="60000" />
+I hope it help you!
+
+
 Ron Pierce
 Added 20/Sep/17 12:16 PM
 Ariel Carrera - I ended up with something like this -
