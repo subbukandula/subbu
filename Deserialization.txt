@@ -1,5 +1,25 @@
 
 
+Ron Pierce
+Added 20/Sep/17 12:16 PM
+Ariel Carrera - I ended up with something like this -
+
+<http-listener name="default" socket-binding="http" tcp-keep-alive="true" read-timeout="$
+
+{http.listener.readtimeout:301000}
+" max-post-size="$
+
+{http.listener.maxpostsize:2097152}
+"/>
+
+Keep in mind if you use a CDN you don't want the timeout listed here to be shorter than the amount of time your CDN will hold open a reusable connection.
+
+
+Ariel Carrera
+Added 20/Sep/17 1:09 PM
+Thank you Ron, I will try with:
+tcp-keep-alive="true" read-timeout="40000" no-request-timeout="10000" request-parse-timeout="30000" write-timeout="300000"
+
 com.sun.xml.internal.ws.connect.timeout  
 com.sun.xml.internal.ws.request.timeout
 
