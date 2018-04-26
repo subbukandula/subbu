@@ -1,5 +1,13 @@
 
-encodeURI escapes all characters except:
+
+
+
+Nattarasan Mudichur 598
+EncodeURI
+
+escapes
+
+allcharacters except:
 Not Escaped:
 
     A-Z a-z 0-9 ; , / ? : @ & = + $ - _ . ! ~ * ' ( ) #
