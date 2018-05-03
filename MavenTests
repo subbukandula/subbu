@@ -1,0 +1,124 @@
+
+
+By default Maven uses the following naming conventions when looking for tests to run:
+
+Test*
+*Test
+*TestCase
+Your test class doesn't follow these conventions. You should rename it or configure Maven Surefire Plugin to use another pattern for test classes.
+
+Also, check if your test classes directory (e.g. src/test/java) corresponds to directory listed in property <testSourceDirectory> in your pom.xml under <build> property. Took me a while to find that.
+
+
+Check that (for jUnit - 4.12 and Eclipse surefire plugin)
+
+Add required jUnit version in POM.xml in dependencies. Do Maven -> Update project to see required jars exported in project.
+Test class is under the folder src/test/java and subdirectories of this folder (or base folder can be specified in POM in config testSourceDirectory). Name of the class should have tailng word 'Test'.
+Test Method in the test class should have annotation @Test
+
+
+
+Maven will not run your tests if the project has <packaging>pom</packaging>
+
+You need to set the packaging to jar (or some other java artefact type) for the tests to run: <packaging>jar</packaging>
+
+
+
+I also had similar issue, after exploring found that testng dependency is causing this issue. After removing the testng dependency from pom (as I dont need it anymore), it started to work fine for me.
+
+    <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>6.8</version>
+        <scope>test</scope>
+    </dependency>
+    
+    
+    Another reason for not running the test cases happened to me - I had a property named "test" for completely different purposes, but it interfered with the surefire plugin. Thus, please check your POMs for:
+
+<properties>
+  <test>.... </test>
+  ...
+</properties>
+and remove it.
+
+
+
+
+When using JUnit 5, i ran into the same problem. Maven Surefire needs a plugin to run JUnit 5 tests. Add this to our pom.xml:
+
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>2.21.0</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-surefire-provider</artifactId>
+            <version>1.2.0-M1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.2.0-M1</version>
+        </dependency>
+    </dependencies>
+</plugin>
+Source: https://junit.org/junit5/docs/current/user-guide/#running-tests-build-maven
+
+
+
+<dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.11</version>
+        <scope>test</scope>
+    </dependency>
+    
+    
+   
+    
+
+If your test class name does not follow the standard naming convention (as highlighted by @axtavt above), you need to add the pattern/class name in the pom.xml in order to Maven pick the test -
+
+...
+<build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*_UT.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build> 
+...
+
+
+
+    
+    So it seems that the problem was coming from testng jar requiring JUnit v3.8.1. Even though Test Classpath was set to depend on JUnit 4, it was too late.
+
+testng dependency was located in my POM:
+
+<dependency>
+  <groupId>org.testng</groupId>
+  <artifactId>testng</artifactId>
+  <version>5.8</version>
+  <scope>test</scope>
+  <classifier>jdk15</classifier>
+</dependency>
+Immediately after I have commented it out, tests started to execute.
+
+Lessons learned:
+
+mvn dependency:tree is not always enough, mvn -X is a friend.
+surefire is not made for developer heaven (I have realized this while looking at project JIRA reports). This is especially true as there are no other alternatives if you use Maven.
+Thanks everybody for your help. Unfortunately there is no way to split answer points between Pascal and Kaleb, but Kaleb's advice to use mvn -X helped me to get on the right track so correct answer points go to him.
+
+
+
+    https://stackoverflow.com/questions/2021771/surefire-is-not-picking-up-junit-4-tests
