@@ -1,0 +1,48 @@
+
+
+
+SSLContext sslcontext=SSLContext.getInstance("TLSv1.2");  
+sslcontext.init(null,null,null);
+SSLContext.setDefault(sslcontext);
+
+  
+   -Djavax.net.debug=all 
+   
+   JAVACMD="$JAVACMD -Ddeployment.security.SSLv2Hello=false -Ddeployment.security.SSLv3=false -Ddeployment.security.TLSv1=false -D\ deployment.security.TLSv1.1=true -Ddeployment.security.TLSv1.2=true"
+   
+   SSLContext context = SSLContext.getInstance("TLS");
+context.init(null,null,null);
+
+SSLSocketFactory factory = (SSLSocketFactory)context.getSocketFactory();
+SSLSocket socket = (SSLSocket)factory.createSocket();
+
+String[] protocols = socket.getSupportedProtocols();
+
+System.out.println("Supported Protocols: " + protocols.length);
+for(int i = 0; i < protocols.length; i++)
+{
+     System.out.println(" " + protocols[i]);
+}
+
+protocols = socket.getEnabledProtocols();
+
+System.out.println("Enabled Protocols: " + protocols.length);
+for(int i = 0; i < protocols.length; i++)
+{
+     System.out.println(" " + protocols[i]);
+}
+
+
+  try {
+        SSLContext ctx = SSLContext.getInstance("TLSv1.2");
+        ctx.init(null, null, null);
+        SSLContext.setDefault(ctx);
+} catch (Exception e) {
+        System.out.println(e.getMessage());
+}
+
+
+
+  You should probably be looking to the configuration that controls the underlying platform TLS implementation via -Djdk.tls.client.protocols=TLSv1.2
+  
+  
